@@ -1,0 +1,49 @@
+// app global css in SCSS form
+@import './font';
+@import './theme';
+@import './editor';
+
+body {
+  font-family: "Poppins", "-apple-system", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+// Layout
+.q-footer-main {
+  background-color: transparent;
+
+  .footer {
+    font-size: .9rem;
+    color: $grey-9;
+    text-align: right;
+  }
+}
+
+body.body--dark {
+  .q-dark {
+    color: #92929f;
+  }
+
+  .q-page {
+    background-color: $dark-page;
+  }
+
+  .q-footer-main {
+    .footer {
+      color: $grey-1;
+    }
+  }
+
+  .bg-info {
+    background-color: #2f264f !important;
+    color: #8950fc;
+  }
+
+  .bg-primary {
+    color: #3699ff;
+    background-color: #212e48 !important;
+
+    &.q-btn {
+      background-color: var(--q-primary) !important;
+    }
+  }
+}

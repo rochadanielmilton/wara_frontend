@@ -1,0 +1,70 @@
+<template>
+    <q-form ref="usuario" @submit="$emit('guardar')" class="row q-col-gutter-md">
+      <q-input square class="col-xs-12 col-md-6" label="Valor" v-model="valoresModel.valor"
+        :rules="[  val => val.length <= 30 || 'Como maximo solo debe tener  30 carácteres.']"></q-input>
+
+
+        <q-select v-model="valoresModel.meta" square class="col-xs-12 col-md-6" :options="roles"
+        label="Meta" option-value="id" option-label="titulo" use-chips emit-value map-options
+        :rules="valoresRules.departamento_id" />
+
+      <div class="col-xs-12 text-right q-gutter-sm">
+        <q-btn icon="close" label="Cancelar" @click="$emit('cancelar')" />
+        <q-btn icon="check" color="primary" label="Guardar" type="submit" />
+      </div>
+    </q-form>
+  </template>
+  <script>
+  import axios from "axios";
+  import { useVModel } from "../../composables/useVModel.js";
+  import { ref, onMounted, inject } from "vue";
+  import validaciones from "../../common/validations";
+  import { estados } from 'src/constants/estados';
+
+  const valoresRules = {
+    nombre: [validaciones.requerido],
+    departamento_id: [validaciones.requerido],
+  };
+
+
+  export default {
+    props: {
+      valores: {
+        type: Object,
+        default: () => ({}),
+      },
+    },
+    setup(props) {
+      const _http = inject("http");
+      const valoresModel = useVModel(props, "valores");
+      const entidades = ref([]);
+      const roles = ref([[]]);
+      const selectedRole = ref(null);
+      onMounted(async () => {
+        try {
+          roles.value = await getDepartamentos();
+        } catch (error) {
+          console.error("Error al obtener roles:", error);
+        }
+      });
+      async function getDepartamentos() {
+        try {
+          const {results} = await _http.get("/metas/");
+          return results;
+        } catch (error) {
+          console.error("Error al realizar la solicitud:", error);
+          return [];
+        }
+      }
+
+      return {
+        estados,
+        valoresModel,
+        valoresRules,
+        entidades,
+        roles,
+        selectedRole,
+      };
+    },
+  };
+  </script>

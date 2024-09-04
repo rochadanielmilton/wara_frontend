@@ -1,0 +1,182 @@
+.editor-container {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 270px 1fr 270px;
+  height: 100%;
+}
+
+.grid-component {
+  position: relative;
+  border-top: none;
+  border-bottom: none;
+  border-left: none;
+}
+
+.grid-properties {
+  position: relative;
+  border-top: none;
+  border-bottom: none;
+  border-right: none;
+}
+
+.grid-properties-container {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  overflow-y: auto;
+}
+
+.grid-component-tab {
+  position: relative;
+  z-index: 1;
+}
+
+.grid-component-container {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  padding-top: 38px;
+}
+
+.grid-component-scroll {
+  overflow-y: auto;
+  height: 100%;
+}
+
+.grid-form {
+  height: 100%;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.editor-components {
+  overflow-y: auto;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.editor-components-container {
+  width: 100%;
+  max-width: 1024px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  height: 100%;
+  padding: 15px;
+}
+
+.list-group {
+  margin: 0;
+  padding: 0;
+}
+
+.list-group-item {
+  margin: 0 0 2px 0;
+  border-radius: 3px;
+  cursor: move;
+  background-color: #fff;
+  position: relative;
+  display: block;
+  padding: .75rem 1.25rem;
+  background-color: #fff;
+  border: 1px solid rgba(0,0,0,.125);
+  line-height: 1rem;
+
+  &.formulario-icon {
+    padding-left: 60px;
+
+    .q-icon {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+    }
+  }
+
+  &.formulario-item {
+    border: 1px dashed $light-blue-2;
+    cursor: pointer;
+  }
+}
+
+.formulario-buttons {
+  margin: 0 15px;
+}
+
+.formulario-title {
+  margin: 0 0 17px;
+}
+
+.dragArea {
+  min-height: 100%;
+  outline: 1px dashed $cyan-3;
+  position: relative;
+  margin-bottom: 15px;
+
+  &.empty::before {
+    content: 'Arrastre los componentes aquí';
+    color: #aaa;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate3d(-50%,-50%, 0);
+    text-align: center;
+    white-space: pre;
+  }
+
+  &.datagrid {
+    min-height: 120px;
+    &.empty::before {
+      content: 'Arrastre los componentes del DataGrid aquí. \a(TextField, Select, Checkbox y Radio)';
+    }
+  }
+}
+
+body.body--dark {
+  .list-group-item {
+    background-color: transparent;
+  }
+}
+
+.editor-tramite {
+  .grid-component-container {
+    padding-top: 4px;
+  }
+
+  canvas {
+    position: relative;
+    z-index: 1;
+  }
+
+  .dragArea {
+    &.empty::before {
+      content: 'Arrastre las acciones aquí';
+    }
+  }
+  .drag-enter {
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      background-color: rgba(0, 0, 0, 0.3);
+      z-index: 2;
+    }   
+  }
+}
