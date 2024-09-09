@@ -82,6 +82,7 @@ const routes = [
       { path: 'tipos-financiamiento', name: 'tipos-financiamiento', component: () => import('pages/TiposFinanciadores.vue'), meta: { title: 'Tipos de Financiamiento' }},
       { path: 'proyectos', name: 'proyectos', component: () => import('pages/Proyectos.vue'), meta: { title: 'Proyectos' }},
       { path: 'proyectos/:proyectoId', name: 'proyecto-detalle', component: () => import('pages/ProyectoDetalle.vue'), meta: { title: 'Proyecto Detalle' }},
+      { path: 'proyecto', name: 'nuevo-proyecto', component: () => import('pages/ProyectoDetalle.vue'), meta: { title: 'Proyecto Detalle' }},
       { path: 'ficha-ejecucion/:realizacion_id', name: 'FichaEjecucion', component: () => import('pages/FichaEjecucion.vue'), props: true, meta: { title: 'Ficha Ejecución' }},
       { path: 'programa-objetivos/:programa_id', name: 'programa-objetivos', component: () => import('src/pages/ObjetivosPrograma.vue'), props: true, meta: { title: 'Programa Objetivos' }},
       { path: 'preinversion-metas/:preinversion_id', name: 'preinversion-metas', component: () => import('src/pages/MetasPreinversion.vue'), props: true, meta: { title: 'Preinversión Metas' }},

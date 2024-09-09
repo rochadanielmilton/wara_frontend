@@ -24,6 +24,8 @@
 import { useVModel } from "../../composables/useVModel.js";
 import AguaForm from "components/Formularios/AguaForm.vue";
 import { ref, inject } from "vue";
+import { useRouter } from 'vue-router';
+
 
 export default {
   props: {
@@ -39,7 +41,13 @@ export default {
     const proyecto = ref(props.proyecto);
     const _http = inject("http");
     const _message = inject("message");
+    const _storage = inject("storage");
     const url = ref("/proyectos/");
+    const router = useRouter();
+    const proyecto_id = inject("proyectoId");
+    const nuevoproyecto = inject("proyecto");
+    const tab = inject("tab");
+
 
     const guardar = async () => {
       const mensaje = !proyecto.value.id
@@ -72,7 +80,15 @@ export default {
 
           datos_actualizados.value = response;
         } else {
-          await _http.post(`${url.value}`, formData, config);
+          const nuevo_proyecto = await _http.post(`${url.value}`, formData, config);
+          proyecto.value=nuevo_proyecto;
+          router.push({
+            name: 'proyecto-detalle',
+            params: { proyectoId: nuevo_proyecto.id },
+          });
+          tab.value ="realizaciones";
+          proyecto_id.value = nuevo_proyecto.id;
+          nuevoproyecto.value = nuevo_proyecto;
         }
         _message.success(mensaje);
       } catch (error) {

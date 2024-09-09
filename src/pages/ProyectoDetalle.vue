@@ -1,153 +1,64 @@
 <template>
 
-  <q-page v-if="!loading" style="margin-top: 1px !important">
+  <q-page v-if="!loading" style="margin-top: 1px !important; display: flex; flex-direction: column;">
+    <div v-if="!proyecto_id && (!sector || sector.value === null)" style=" padding: 0; margin: 0;">
+      <q-select v-model="selectedOption" :options="options" class="custom-select" color="primary" label="Sector"
+        @update:model-value="selectSector" style="width: 250px; margin-top: 10px;" />
+      <hr>
+    </div>
+
+
     <div>
       <q-splitter v-model="splitterModel">
         <template v-slot:before>
-          <q-tabs
-            v-model="tab"
-            @update:model-value="handleTabChange"
-            vertical
-            class="bg-white text-black shadow-2 custom-tabs"
-            style="width: 190px"
-          >
-            <q-tab
-              v-if="sector_proyecto === 'AGUA Y SANEAMIENTO'"
-              name="agua_saneamiento"
-              icon="clean_hands"
-              label="Información General"
-              class="custom-tab"
-            />
 
-            <q-tab
-              v-if="sector_proyecto === 'CUENCAS'"
-              name="cuencas"
-              icon="water_drop"
-              label="Información General"
-              class="custom-tab"
-            />
+          <q-tabs v-model="tab" @update:model-value="handleTabChange" vertical
+            class="bg-white text-black shadow-2 custom-tabs" style="width: 190px">
 
-            <q-tab
-              v-if="sector_proyecto === 'RIEGO'"
-              name="riego"
-              icon="water_drop"
-              label="Información General"
-              class="custom-tab"
-            />
-            <q-tab
-              v-if="sector_proyecto === 'RESIDUOS'"
-              name="residuos"
-              icon="delete"
-              label="Información General"
-              class="custom-tab"
-            />
+            <q-tab v-if="sector === 'AGUA Y SANEAMIENTO' || sector_proyecto === 'AGUA Y SANEAMIENTO'"
+              name="agua_saneamiento" icon="clean_hands" label="Información General" class="custom-tab" />
+            <q-tab v-if="sector === 'CUENCAS' || sector_proyecto === 'CUENCAS'" name="cuencas" icon="gesture"
+              label="Información General" class="custom-tab" />
+            <q-tab v-if="sector === 'RIEGO' || sector_proyecto === 'RIEGO'" name="riego" icon="water_drop"
+              label="Información General" class="custom-tab" />
 
-            <q-tab
-              v-if="sector === 'AGUA Y SANEAMIENTO'"
-              name="agua_saneamiento"
-              icon="clean_hands"
-              label="Información General"
-              class="custom-tab"
-            />
-            <q-tab
-              v-if="sector === 'CUENCAS'"
-              name="cuencas"
-              icon="gesture"
-              label="Información General"
-              class="custom-tab"
-            />
-            <q-tab
-              v-if="sector === 'RIEGO'"
-              name="riego"
-              icon="water_drop"
-              label="Información General"
-              class="custom-tab"
-            />
-
-            <q-tab
-              v-if="sector === 'RESIDUOS'"
-              name="residuos"
-              icon="delete"
-              label="Información General"
-              class="custom-tab"
-            />
-            <q-tab
-              name="realizaciones"
-              icon="settings"
-              label="Ejecución de Proyecto"
-              class="custom-tab"
-            />
-
-            <template
-              v-if="
-                sector === 'AGUA Y SANEAMIENTO' ||
-                sector_proyecto === 'AGUA Y SANEAMIENTO'
-              "
-            >
-              <q-tab
-                name="conexiones"
-                icon="clean_hands"
-                label="Conexiones"
-                class="custom-tab"
-              />
-              <q-tab
-                name="poblaciones"
-                icon="group"
-                label="Poblaciones"
-                class="custom-tab"
-              />
-              <q-tab
-                name="drenajes_pluviales"
-                icon="water_drop"
-                label="Drenajes Pluviales"
-                class="custom-tab"
-              />
+            <q-tab v-if="sector === 'RESIDUOS' || sector_proyecto === 'RESIDUOS'" name="residuos" icon="delete"
+              label="Información General" class="custom-tab" />
+            <q-tab name="realizaciones" icon="settings" label="Ejecución de Proyecto" class="custom-tab" />
+            <q-tab name="informacion_georreferencial" icon="location_pin" label="Georeferencial" class="custom-tab" />
+            <template v-if="
+              sector === 'AGUA Y SANEAMIENTO' ||
+              sector_proyecto === 'AGUA Y SANEAMIENTO'
+            ">
+              <q-tab name="conexiones" icon="clean_hands" label="Conexiones" class="custom-tab" />
+              <q-tab name="poblaciones" icon="group" label="Poblaciones" class="custom-tab" />
+              <q-tab name="drenajes_pluviales" icon="water_drop" label="Drenajes Pluviales" class="custom-tab" />
             </template>
 
-            <q-tab
-              v-if="sector === 'CUENCAS' || sector_proyecto === 'CUENCAS'"
-              name="variables_impacto"
-              icon="calculate"
-              label="Variables de Impacto"
-              class="custom-tab"
-            />
-            <q-tab
-              name="otros"
-              icon="my_library_books"
-              label="Indicadores"
-              class="custom-tab"
-            />
-            <q-tab
-              name="informacion_georreferencial"
-              icon="location_pin"
-              label="Georeferencial"
-              class="custom-tab"
-            />
-            <q-tab
-              name="seguimientos"
-              icon="nature_people"
-              label="seguimiento"
-              class="custom-tab"
-            />
+            <q-tab v-if="sector === 'CUENCAS' || sector_proyecto === 'CUENCAS'" name="variables_impacto"
+              icon="calculate" label="Variables de Impacto" class="custom-tab" />
+            <q-tab name="otros" icon="my_library_books" label="Indicadores" class="custom-tab" />
+
+            <q-tab name="seguimientos" icon="nature_people" label="seguimiento" class="custom-tab" />
           </q-tabs>
         </template>
         <template v-slot:after>
-          <q-tab-panels
-            v-model="tab"
-            animated
-            swipeable="false"
-            vertical
-            transition-prev="jump-up"
-            transition-next="jump-up"
-          >
+          <q-tab-panels v-model="tab" animated swipeable="false" vertical transition-prev="jump-up"
+            transition-next="jump-up">
             <q-tab-panel name="informacion_general">
-              <InformacionGeneral :proyecto="proyecto" />
+              <InformacionGeneral :proyecto=proyecto />
             </q-tab-panel>
+
             <q-tab-panel name="realizaciones">
-              <Realizaciones :proyecto="proyecto"></Realizaciones>
+              <div v-if="proyecto_id">
+                <Realizaciones :proyecto="proyecto"></Realizaciones>
+              </div>
+              <div v-else>
+                <h3 style="text-align: center">Primero deve registrar la informacion general</h3>
+              </div>
             </q-tab-panel>
             <q-tab-panel name="agua_saneamiento">
-              <AguaGen :proyecto="proyecto"></AguaGen>
+              <AguaGen :proyecto="proyecto" @updateProyectoId="handleUpdateProyectoId"></AguaGen>
             </q-tab-panel>
             <q-tab-panel name="cuencas">
               <CuencasGen :proyecto="proyecto"></CuencasGen>
@@ -159,32 +70,69 @@
               <ResiduosGen :proyecto="proyecto"></ResiduosGen>
             </q-tab-panel>
             <q-tab-panel name="conexiones">
-              <Conexiones :proyecto="proyecto"></Conexiones>
+              <div v-if="proyecto_id">
+                <Conexiones :proyecto="proyecto"></Conexiones>
+              </div>
+              <div v-else>
+                <h3 style="text-align: center">Primero deve registrar la informacion general</h3>
+              </div>
             </q-tab-panel>
             <q-tab-panel name="informacion_georreferencial">
-              <InformacionGeorreferencial
-                :proyecto="proyecto"
-                @update="handleUpdate"
-              />
+              <div v-if="proyecto_id">
+                <InformacionGeorreferencial :proyecto="proyecto" @update="handleUpdate" />
+              </div>
+              <div v-else>
+                <h3 style="text-align: center">Primero deve registrar la informacion general</h3>
+              </div>
             </q-tab-panel>
             <q-tab-panel name="seguimientos">
-              <Seguimientos :proyecto="proyecto" />
+              <div v-if="proyecto_id">
+                <Seguimientos :proyecto="proyecto" />
+              </div>
+              <div v-else>
+                <h3 style="text-align: center">Primero deve registrar la informacion general</h3>
+              </div>
             </q-tab-panel>
 
             <q-tab-panel name="conexiones">
-              <Conexiones :proyecto="proyecto"></Conexiones>
+              <div v-if="proyecto_id">
+                <Conexiones :proyecto="proyecto"></Conexiones>
+              </div>
+              <div v-else>
+                <h3 style="text-align: center">Primero deve registrar la informacion general</h3>
+              </div>
             </q-tab-panel>
             <q-tab-panel name="poblaciones">
-              <Poblaciones :proyecto="proyecto"></Poblaciones>
+              <div v-if="proyecto_id">
+                <Poblaciones :proyecto="proyecto"></Poblaciones>
+              </div>
+              <div v-else>
+                <h3 style="text-align: center">Primero deve registrar la informacion general</h3>
+              </div>
             </q-tab-panel>
             <q-tab-panel name="drenajes_pluviales">
-              <DrenajesPluviales :proyecto="proyecto"></DrenajesPluviales>
+              <div v-if="proyecto_id">
+                <DrenajesPluviales :proyecto="proyecto"></DrenajesPluviales>
+              </div>
+              <div v-else>
+                <h3 style="text-align: center">Primero deve registrar la informacion general</h3>
+              </div>
             </q-tab-panel>
             <q-tab-panel name="variables_impacto">
-              <VariablesImpacto :proyecto="proyecto"></VariablesImpacto>
+              <div v-if="proyecto_id">
+                <VariablesImpacto :proyecto="proyecto"></VariablesImpacto>
+              </div>
+              <div v-else>
+                <h3 style="text-align: center">Primero deve registrar la informacion general</h3>
+              </div>
             </q-tab-panel>
             <q-tab-panel name="otros">
-              <Otros :proyecto="proyecto"></Otros>
+              <div v-if="proyecto_id">
+                <Otros :proyecto="proyecto"></Otros>
+              </div>
+              <div v-else>
+                <h3 style="text-align: center">Primero deve registrar la informacion general</h3>
+              </div>
             </q-tab-panel>
           </q-tab-panels>
         </template>
@@ -196,7 +144,7 @@
 
 <script>
 import { useRoute } from "vue-router";
-import { ref, onMounted, inject } from "vue";
+import { ref, onMounted, inject,provide} from "vue";
 import InformacionGeneral from "components/ProyectoDetalle/InformacionGeneral";
 import Realizaciones from "components/ProyectoDetalle/Realizaciones";
 import Conexiones from "components/ProyectoDetalle/Conexiones";
@@ -211,6 +159,7 @@ import Otros from "components/ProyectoDetalle/Otros.vue";
 import Poblaciones from "components/ProyectoDetalle/Poblaciones.vue";
 import VariablesImpacto from "components/ProyectoDetalle/VariablesImpacto.vue";
 import Proyectos from "./Proyectos.vue";
+import { bexBackground } from "quasar/wrappers";
 export default {
   components: {
     InformacionGeneral,
@@ -233,31 +182,51 @@ export default {
     const _storage = inject("storage");
     const loading = ref(true);
     const route = useRoute();
-    const proyecto = ref(null);
+    const proyecto = ref({});
+    provide("proyecto", proyecto);
     const sector = ref(null);
     const sector_proyecto = ref(null);
     const tab = ref("informacion_general");
-
+    provide("tab",tab);
+    const proyecto_id = ref(route.params.proyectoId || false);
+    provide("proyectoId", proyecto_id);
+    const selectedOption = ref('agua_saneamiento');
+    const options = ref([
+      { label: 'AGUA Y SANEAMIENTO', value: 'agua_saneamiento' },
+      { label: 'CUENCAS', value: 'cuencas' },
+      { label: 'RIEGO', value: 'riego' },
+      { label: 'RESIDUOS', value: 'residuos' }
+    ]);
     // const _storage = {
     //   get: (key) => JSON.parse(localStorage.getItem(key)),
     //   set: (key, value) => localStorage.setItem(key, JSON.stringify(value)),
     // };
 
-    const handleTabChange = (value) => {
-      _storage.set("tab", value);
-    };
 
     onMounted(async () => {
-      proyecto.value = await _http.get(
-        `/proyectos/${route.params.proyectoId}/`
-      );
+      if (proyecto_id.value) {
+        try {
+          const response = await _http.get(`/proyectos/${route.params.proyectoId}/`);
+          proyecto.value = response;
+        } catch (error) {
+
+          _message.error("No se pudo cargar el proyecto. Verifica la conexión o el ID del proyecto.");
+        };
+      }else{
+
+      };
+
       loading.value = false;
-      sector_proyecto.value = proyecto.value.sector_name;
       const usuarioStorage = _storage.get("usuario");
       if (usuarioStorage) {
         const usuario = usuarioStorage;
 
         sector.value = usuario.sector?.nombre || "";
+        if (!sector.value){
+          sector_proyecto.value = proyecto.value.sector_name ? proyecto.value.sector_name : 'AGUA Y SANEAMIENTO';
+        }else{
+          sector_proyecto.value = "";
+        }
 
         // Establece la pestaña activa según el sector
         switch (sector.value) {
@@ -299,9 +268,12 @@ export default {
       if (savedTab) {
         tab.value = savedTab;
       }
-      
-    });
 
+    });
+    const selectSector = (option) => {
+      tab.value = option.value;
+      sector_proyecto.value = option.label;
+    };
     return {
       tab,
       splitterModel: ref(12),
@@ -309,7 +281,11 @@ export default {
       loading,
       sector,
       sector_proyecto,
-      handleTabChange,
+      proyecto_id,
+      selectedOption,
+      options,
+      selectSector,
+
     };
   },
 };
@@ -326,5 +302,14 @@ export default {
   display: none;
   background-color: black;
   width: 50px;
+}
+
+.custom-select {
+  background-color: #d8d5d5;
+  /* Color de fondo azul claro */
+  border-radius: 8px;
+  /* Bordes redondeados */
+  padding: 5px;
+  /* Espaciado interior */
 }
 </style>

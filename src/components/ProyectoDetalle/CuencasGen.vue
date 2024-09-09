@@ -27,6 +27,7 @@ import { useVModel } from "../../composables/useVModel.js";
 import CuencasForm from "components/Formularios/CuencasForm.vue";
 import { ref, inject } from "vue";
 import { useQuasar } from "quasar";
+import { useRouter } from 'vue-router';
 // alskdf
 export default {
   props: {
@@ -45,6 +46,11 @@ export default {
     const url = ref("/proyectos/");
     const valoresModel = ref({});
     const $q = useQuasar();
+    const router = useRouter();
+    const proyecto_id = inject("proyectoId");
+    const nuevoproyecto = inject("proyecto");
+    const tab = inject("tab");
+
     const guardar = async () => {
       const mensaje = !proyecto.value.id
         ? "Proyecto creado de manera exitosa."
@@ -76,7 +82,14 @@ export default {
 
           datos_actualizados.value = response;
         } else {
-          await _http.post(`${url.value}`, formData, config);
+          const nuevo_proyecto = await _http.post(`${url.value}`, formData, config);
+          router.push({
+            name: 'proyecto-detalle',
+            params: { proyectoId: nuevo_proyecto.id },
+          });
+          tab.value ="realizaciones";
+          proyecto_id.value = nuevo_proyecto.id;
+          nuevoproyecto.value = nuevo_proyecto;
         }
         _message.success(mensaje);
         $q.notify({

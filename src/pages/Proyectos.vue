@@ -1,26 +1,34 @@
 <template>
   <q-page>
     <Titulo titulo="Proyectos" icono="handyman"> </Titulo>
+    <!-- <h6>{{usuario}}</h6> -->
     <!-- <h6>{{ programa_id }}</h6> -->
 
     <CrudTable :filters="filters" :columns="columns" :url="url" order="nombre">
       <template v-slot:buttons="{ open }">
         <q-btn
           v-if="usuario && usuario.sector == null"
-          v-for="s in sectores"
-          :key="s.id"
+          color="primary"
           icon="add"
-          :color="getColor(s.nombre)"
-          @click="openModalSector(open, s)"
-          :label="s.nombre"
+          @click="
+                  this.$router.push({
+                    name: 'nuevo-proyecto'
+                  })
+                "
+
+          label="Nuevo Proyecto"
         >
-          <q-tooltip>Registrar Proyecto {{ s.nombre }}</q-tooltip>
+          <q-tooltip>Registrar Proyecto</q-tooltip>
         </q-btn>
         <q-btn
           v-if="usuario && usuario.sector != null"
           icon="add"
           color="primary"
-          @click="openModal(open)"
+          @click="
+                  this.$router.push({
+                    name: 'nuevo-proyecto'
+                  })
+                "
           label="Nuevo Proyecto"
           ><q-tooltip>Crear</q-tooltip></q-btn
         >
@@ -31,18 +39,16 @@
           <q-toolbar class="q-pa-md">
             <q-icon name="settings" size="md" />
             <q-toolbar-title>
-              {{ proyecto.id ? "Editar" : "Agregar" }} Proyecto
+              {{ proyecto.id ? "Detalle del" : "Agregar" }} Proyecto
             </q-toolbar-title>
             <q-space />
             <q-btn flat round icon="close" @click="closeModal(close)" />
           </q-toolbar>
           <q-card-section>
-            <ResiduosForm
+                        <ResiduosForm
               v-if="
-                (usuario &&
-                  usuario.sector &&
-                  usuario.sector.nombre == 'RESIDUOS') ||
-                res == true
+                (usuario.sector == null)  && proyecto.id == null &&
+               res == true
               "
               :valores="proyecto"
               @guardar="guardar1(update, close)"
@@ -54,15 +60,81 @@
               deno-vicemin="VAPSB"
               sector-clasificador="SANEAMIENTO BÁSICO"
               :programa-id="programa_id"
+
+            />
+            <ResiduosForm
+              v-if="
+              (usuario.sector == null) &&
+               res == true && proyecto.id != null
+              "
+              :valores="proyecto"
+
+              @quit="closeModal(close)"
+              isModal
+              :isMigrated="isMigrated"
+              denominativo-ejecutivo="RESIDUOS"
+              deno-vicemin="VAPSB"
+              sector-clasificador="SANEAMIENTO BÁSICO"
+              :programa-id="programa_id"
               :isDisabled="isDisabled"
             />
-
-            <CuencasForm
+            <ResiduosForm
               v-if="
                 (usuario &&
                   usuario.sector &&
-                  usuario.sector.nombre == 'CUENCAS') ||
+                  usuario.sector.nombre == 'RESIDUOS')  && proyecto.id == null
+              "
+              :valores="proyecto"
+              @guardar="guardar1(update, close)"
+              @cancelar="cerrarModal(close)"
+              @quit="closeModal(close)"
+              isModal
+              :isMigrated="isMigrated"
+              denominativo-ejecutivo="RESIDUOS"
+              deno-vicemin="VAPSB"
+              sector-clasificador="SANEAMIENTO BÁSICO"
+              :programa-id="programa_id"
+
+            />
+            <ResiduosForm
+              v-if="
+              (usuario &&
+                  usuario.sector &&
+                  usuario.sector.nombre == 'RESIDUOS') &&
+               res == true && proyecto.id != null
+              "
+              :valores="proyecto"
+
+              @quit="closeModal(close)"
+              isModal
+              :isMigrated="isMigrated"
+              denominativo-ejecutivo="RESIDUOS"
+              deno-vicemin="VAPSB"
+              sector-clasificador="SANEAMIENTO BÁSICO"
+              :programa-id="programa_id"
+              :isDisabled="isDisabled"
+            />
+
+<CuencasForm
+              v-if="
+                (usuario.sector == null)  && proyecto.id == null &&
                 res1 == true
+              "
+              :valores="proyecto"
+              @guardar="guardar2(update, close)"
+              @cancelar="cerrarModal(close)"
+              @quit="closeModal(close)"
+              isModal
+              :isMigrated="isMigrated"
+              denominativo-ejecutivo="CUENCAS"
+              deno-vicemin="VRHR"
+              sector-clasificador="RECURSOS HÍDRICOS"
+              :programa-id="programa_id"
+            />
+                        <CuencasForm
+              v-if="
+              (usuario.sector == null) &&
+                res1 == true && proyecto.id != null
               "
               :valores="proyecto"
               @guardar="guardar2(update, close)"
@@ -77,12 +149,70 @@
               :isDisabled="isDisabled"
             />
 
-            <AguaForm
+
+            <CuencasForm
               v-if="
                 (usuario &&
                   usuario.sector &&
-                  usuario.sector.nombre == 'AGUA Y SANEAMIENTO') ||
-                res2 == true
+                  usuario.sector.nombre == 'CUENCAS' )  && proyecto.id == null
+              "
+              :valores="proyecto"
+              @guardar="guardar2(update, close)"
+              @cancelar="cerrarModal(close)"
+              @quit="closeModal(close)"
+              isModal
+              :isMigrated="isMigrated"
+              denominativo-ejecutivo="CUENCAS"
+              deno-vicemin="VRHR"
+              sector-clasificador="RECURSOS HÍDRICOS"
+              :programa-id="programa_id"
+            />
+                        <CuencasForm
+              v-if="
+              (usuario &&
+                  usuario.sector &&
+                  usuario.sector.nombre == 'CUENCAS') &&
+                res1 == true && proyecto.id != null
+              "
+              :valores="proyecto"
+              @guardar="guardar2(update, close)"
+              @cancelar="cerrarModal(close)"
+              @quit="closeModal(close)"
+              isModal
+              :isMigrated="isMigrated"
+              denominativo-ejecutivo="CUENCAS"
+              deno-vicemin="VRHR"
+              sector-clasificador="RECURSOS HÍDRICOS"
+              :programa-id="programa_id"
+              :isDisabled="isDisabled"
+            />
+
+
+            <AguaForm
+              v-if="
+               (usuario.sector == null) &&
+                res2 == true && proyecto.id == null
+              "
+              :valores="proyecto"
+              @guardar="guardar3(update, close)"
+              @cancelar="cerrarModal(close)"
+              @quit="closeModal(close)"
+              isModal
+              :isMigrated="isMigrated"
+              denominativo-ejecutivo="AGUA Y SANEAMIENTO"
+              deno-vicemin="VAPSB"
+              sector-clasificador="SANEAMIENTO BÁSICO"
+              :sector-id="current_sector_id"
+              :viceministerio-id="current_viceministerio_id"
+              :programa-id="programa_id"
+            />
+
+
+
+            <AguaForm
+              v-if="
+                   (usuario.sector == null) &&
+                res2 == true  && proyecto.id != null
               "
               :valores="proyecto"
               @guardar="guardar3(update, close)"
@@ -99,12 +229,108 @@
               :isDisabled="isDisabled"
             />
 
+
+            <AguaForm
+              v-if="
+                (usuario &&
+                  usuario.sector &&
+                  usuario.sector.nombre == 'AGUA Y SANEAMIENTO') && proyecto.id == null
+              "
+              :valores="proyecto"
+              @guardar="guardar3(update, close)"
+              @cancelar="cerrarModal(close)"
+              @quit="closeModal(close)"
+              isModal
+              :isMigrated="isMigrated"
+              denominativo-ejecutivo="AGUA Y SANEAMIENTO"
+              deno-vicemin="VAPSB"
+              sector-clasificador="SANEAMIENTO BÁSICO"
+              :sector-id="current_sector_id"
+              :viceministerio-id="current_viceministerio_id"
+              :programa-id="programa_id"
+            />
+            <AguaForm
+              v-if="
+                  (usuario &&
+                  usuario.sector &&
+                  usuario.sector.nombre == 'AGUA Y SANEAMIENTO')&&
+                res2 == true && proyecto.id != null
+              "
+              :valores="proyecto"
+              @guardar="guardar3(update, close)"
+              @cancelar="cerrarModal(close)"
+              @quit="closeModal(close)"
+              isModal
+              :isMigrated="isMigrated"
+              denominativo-ejecutivo="AGUA Y SANEAMIENTO"
+              deno-vicemin="VAPSB"
+              sector-clasificador="SANEAMIENTO BÁSICO"
+              :sector-id="current_sector_id"
+              :viceministerio-id="current_viceministerio_id"
+              :programa-id="programa_id"
+              :isDisabled="isDisabled"
+            />
+
+
+            <RiegoForm
+              v-if="
+                 (usuario.sector == null) &&
+                res3 == true && proyecto.id == null
+              "
+              :valores="proyecto"
+              @guardar="guardar4(update, close)"
+              @cancelar="cerrarModal(close)"
+              @quit="closeModal(close)"
+              isModal
+              :isMigrated="isMigrated"
+              denominativo-ejecutivo="RIEGO"
+              deno-vicemin="VRHR"
+              sector-clasificador="RECURSOS HÍDRICOS"
+              :programa-id="programa_id"
+            />
+
+                        <RiegoForm
+              v-if="
+                  (usuario.sector == null) &&
+                res3 == true && proyecto.id != null
+              "
+              :valores="proyecto"
+              @guardar="guardar4(update, close)"
+              @cancelar="cerrarModal(close)"
+              @quit="closeModal(close)"
+              isModal
+              :isMigrated="isMigrated"
+              denominativo-ejecutivo="RIEGO"
+              deno-vicemin="VRHR"
+              sector-clasificador="RECURSOS HÍDRICOS"
+              :programa-id="programa_id"
+              :isDisabled="isDisabled"
+            />
+
             <RiegoForm
               v-if="
                 (usuario &&
                   usuario.sector &&
-                  usuario.sector.nombre == 'RIEGO') ||
-                res3 == true
+                  usuario.sector.nombre == 'RIEGO') && proyecto.id == null
+              "
+              :valores="proyecto"
+              @guardar="guardar4(update, close)"
+              @cancelar="cerrarModal(close)"
+              @quit="closeModal(close)"
+              isModal
+              :isMigrated="isMigrated"
+              denominativo-ejecutivo="RIEGO"
+              deno-vicemin="VRHR"
+              sector-clasificador="RECURSOS HÍDRICOS"
+              :programa-id="programa_id"
+            />
+
+                        <RiegoForm
+              v-if="
+                 (usuario &&
+                  usuario.sector &&
+                  usuario.sector.nombre == 'RIEGO') &&
+                res3 == true && proyecto.id != null
               "
               :valores="proyecto"
               @guardar="guardar4(update, close)"
@@ -238,6 +464,7 @@ import FichaProyecto from "components/Formularios/FichaProyecto.vue";
 import { estados } from "src/constants/estados";
 import { useRoute } from "vue-router";
 import { useStore } from "vuex";
+import { useRouter } from 'vue-router';
 import Usuarios from "./Usuarios.vue";
 const filters = [
   {
@@ -356,6 +583,7 @@ export default {
   setup() {
     const store = useStore();
     const route = useRoute();
+    const router = useRouter();
     const _storage = inject("storage");
     const sectores = ref([]);
     const res = ref(false);
@@ -653,8 +881,6 @@ export default {
           "empresa_constructora",
           proyecto.value.empresa_constructora
         );
-        console.log("guardar residuo:::", proyecto.value);
-
         console.log("alguardar Residuos", proyecto.value);
 
         const formData = new FormData();
@@ -674,10 +900,17 @@ export default {
             `/residuos/proyectos/${proyecto.value.id}/`,
             formData
           );
+          _message.success(mensaje);
         } else {
-          await _http.post(`/residuos/proyectos/`, formData);
+
+          const aaa = await _http.post(`/residuos/proyectos/`, formData);
+          _storage.set("tab", 'realizaciones');
+          router.push({
+            name: 'proyecto-detalle',
+            params: { proyectoId: aaa.id },
+          });
+          _message.success('PARA CONCLUIR, ES NECESARIO QUE COMPLETE EL SIGUIENTE FORMULARIO DE EJECUCIONES');
         }
-        _message.success(mensaje);
         await update();
         closeModal(close);
       } catch (error) {
@@ -713,16 +946,22 @@ export default {
         }
 
         if (proyecto.value.id) {
-          const reponse = await _http.put(
+          await _http.put(
             `/cuencas/proyectos/${proyecto.value.id}/`,
             formData,
             config
           );
-          console.log("reponse_del servidor", reponse);
+          _message.success(mensaje);
         } else {
-          await _http.post(`/cuencas/proyectos/`, formData, config);
+          const aaa = await _http.post(`/cuencas/proyectos/`, formData, config);
+          _storage.set("tab", 'realizaciones');
+          router.push({
+            name: 'proyecto-detalle',
+            params: { proyectoId: aaa.id },
+          });
+          _message.success('PARA CONCLUIR, ES NECESARIO QUE COMPLETE EL SIGUIENTE FORMULARIO DE EJECUCIONES');
+
         }
-        _message.success(mensaje);
         await update();
         closeModal(close);
       } catch (error) {
@@ -756,10 +995,17 @@ export default {
             `/agua-saneamiento/proyectos/${proyecto.value.id}/`,
             formData
           );
+          _message.success(mensaje);
         } else {
-          await _http.post(`/agua-saneamiento/proyectos/`, formData);
+          const aaa = await _http.post(`/agua-saneamiento/proyectos/`, formData);
+          _storage.set("tab", 'realizaciones');
+          router.push({
+            name: 'proyecto-detalle',
+            params: { proyectoId: aaa.id },
+          });
+          _message.success('PARA CONCLUIR, ES NECESARIO QUE COMPLETE EL SIGUIENTE FORMULARIO DE EJECUCIONES');
+
         }
-        _message.success(mensaje);
         await update();
         closeModal(close);
       } catch (error) {
@@ -799,10 +1045,18 @@ export default {
             formData,
             config
           );
+          _message.success(mensaje);
+
         } else {
-          await _http.post(`/riego/proyectos/`, formData, config);
+          const aaa = await _http.post(`/riego/proyectos/`, formData, config);
+          _storage.set("tab", 'realizaciones');
+          router.push({
+            name: 'proyecto-detalle',
+            params: { proyectoId: aaa.id },
+          });
+          _message.success('PARA CONCLUIR, ES NECESARIO QUE COMPLETE EL SIGUIENTE FORMULARIO DE EJECUCIONES');
+
         }
-        _message.success(mensaje);
         await update();
         closeModal(close);
       } catch (error) {
@@ -813,6 +1067,7 @@ export default {
 
     onMounted(async () => {
       _storage.remove("tab");
+      _storage.remove('realizacion_id');
     });
 
     return {
